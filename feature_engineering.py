@@ -130,3 +130,16 @@ SP = pd.read_csv(SP_file_name)
 print(standardize(SP, "Volume"))
 # SP[SIGNALS.SIGNAL()] = generate_y(SP, "Close")
 # SP.to_csv(SP_file_name)
+
+# correlation matrix
+def corr_matrix():
+    df = pd.read_csv('data_id_5y.csv',index_col=0)
+    #forward fill
+    df = df.ffill(axis=0)
+    #all close prices
+    df = df.filter(regex="Close")
+    matrix = df.corr().style.background_gradient(cmap='coolwarm').set_precision(2)
+    return(matrix)
+
+
+
