@@ -123,7 +123,7 @@ def data_integrate():
     # data_1d_5y.head(5)
     data_1d_5y[data_1d_5y.isna().any(axis=1)]
     data_1d_5y.reset_index(inplace=True)
-    data_1d_5y.to_csv('data_id_5y.csv', index=True) # Save the name as 'data_id_5y.csv'
+    data_1d_5y.to_csv('data_1d_5y.csv', index=True)
 
 
 # def harmonize_dates():
@@ -136,7 +136,7 @@ print(standardize(SP, "Volume"))
 
 # correlation matrix
 def corr_matrix():
-    df = pd.read_csv('data_id_5y.csv',index_col=0)
+    df = pd.read_csv('data_1d_5y.csv',index_col=0)
     #forward fill
     df = df.ffill(axis=0)
     #all close prices
