@@ -23,7 +23,9 @@ Feature selection:
 import pandas as pd
 import download_data as dd
 import numpy as np
-
+from sklearn.decomposition import PCA
+from sklearn.ensemble import ExtraTreesClassifier
+import matplotlib.pyplot as plt
 
 class Signals:
     def HOLD(self): return int(0)
@@ -142,3 +144,38 @@ def corr_matrix():
     matrix = df.corr().style.background_gradient(cmap='coolwarm').set_precision(2)
     return(matrix)
 
+def pca(df):
+    # it will be more useful when we have set the number of PC or explain_variance_ratio
+    # this input df should be filled df after df = df.ffill(axis=0)
+    pca = PCA() # there is a parameter to decide the number of PCs or explain variance ratio
+    pca.fit(df)  
+
+    explained_variance_ratio = pca.explained_variance_ratio_
+    eigen_values = pca.explained_variance_
+    eigen_vectors = pca.components_ 
+    
+    df1 = pd.DataFrame({
+                 'eigen_values':eigen_values,
+                 'explained_variance_ratio':explained_variance_ratio})
+    df2 = pd.DataFrame(eigen_vectors)
+    df3 = pd.concat([df1,df2], axis=1)
+    df3.to_csv(r'eigen_values.csv', index=False)    
+    
+def feature_importance(df):
+    # this input df should be filled df after df = df.ffill(axis=0)    
+    y = df['Signal']
+    X = df.drop(['Date','Signal'], axis=1)
+    
+    model = ExtraTreesClassifier(n_estimators=50) # default is 10 and will change to 100 in the new version
+    model.fit(X,y)
+    feature_importance = pd.Series(model.feature_importances_, index=X.columns).sort_values(ascending=False)
+    
+    # plot graph of feature importances for better visualization
+    feature_importance.plot(kind='barh')
+    plt.title('feature_importance')
+    plt.show()
+    
+    # write feature_importances.csv to data directory
+    df = pd.DataFrame(feature_importance, columns=['importance'])
+    df['rank'] = df['importance'].rank(ascending=False) 
+    df.to_csv(r'feature_importance.csv')
