@@ -1,0 +1,3 @@
+Model,%age correct,feature excluded,comments
+AdaBoost Classifier,51.6,Date,"Preliminary, 80/20 randomly sliced"
+Random Forest Classifier,51.2,Date,"Preliminary, 80/20 randomly sliced"

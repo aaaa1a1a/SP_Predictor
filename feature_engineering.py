@@ -45,6 +45,7 @@ SIGNALS = Signals()
 
 def generate_y(df, col_name):
     diff = df[col_name].diff(periods=-1)
+    print(diff)
     diff.values[diff.values == 0] = SIGNALS.HOLD()
     diff.values[diff.values > 0] = SIGNALS.SELL()
     diff.values[diff.values < 0] = SIGNALS.BUY()
@@ -60,6 +61,7 @@ def standardize(df, col_name):
     col = df[col_name]
     mean = col.mean()
     std = col.std()
+    print(mean, std)
     return ((col - mean) / std)
     
     
@@ -123,20 +125,12 @@ def data_integrate():
     # data_1d_5y.head(5)
     data_1d_5y[data_1d_5y.isna().any(axis=1)]
     data_1d_5y.reset_index(inplace=True)
-    data_1d_5y.to_csv('data_1d_5y.csv', index=True)
-
-
-# def harmonize_dates():
-SP_file_name = dd.file_name("SP", dd.interval_period)
-SP = pd.read_csv(SP_file_name)
-print(standardize(SP, "Volume"))
-# SP[SIGNALS.SIGNAL()] = generate_y(SP, "Close")
-# SP.to_csv(SP_file_name)
+    data_1d_5y.to_csv('data_id_5y.csv', index=True) # Save the name as 'data_id_5y.csv'
 
 
 # correlation matrix
 def corr_matrix():
-    df = pd.read_csv('data_1d_5y.csv',index_col=0)
+    df = pd.read_csv('data_id_5y.csv',index_col=0)
     #forward fill
     df = df.ffill(axis=0)
     #all close prices

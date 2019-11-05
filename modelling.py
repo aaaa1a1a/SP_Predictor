@@ -49,3 +49,6 @@ def fit_random_forest(features, labels):
 
     model = model.fit(features, labels)
     return model
+
+def get_results(y_true,pred):
+    return (y_true == pred).value_counts()
