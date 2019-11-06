@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.model_selection import RandomizedSearchCV
-
+from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
 
 def fit_ada_boost(features, labels):
     param_dist = {
@@ -49,6 +49,13 @@ def fit_random_forest(features, labels):
 
     model = model.fit(features, labels)
     return model
+
+
+def fit_knn(features, labels):
+    model = KNeighborsClassifier(n_neighbors=10)
+    model.fit(features, labels)
+    return model
+
 
 def get_results(y_true,pred):
     return (y_true == pred).value_counts()

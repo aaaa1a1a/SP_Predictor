@@ -16,6 +16,7 @@ for col in data.columns:
 
 data.to_csv(dd.file_name("data_normalized"))
 '''
+
 data_file = dd.file_name("data_normalized")
 data = pd.read_csv(data_file)
 
@@ -29,6 +30,7 @@ prediction = pd.DataFrame()
 results = pd.DataFrame()
 results["true_y"] = yTest
 
+"""
 ada = md.fit_ada_boost(xTrain, yTrain)
 results["prediction"] = ada.predict(xTest)
 print("Adaboost Classifier")
@@ -38,4 +40,9 @@ rf = md.fit_random_forest(xTrain, yTrain)
 results["prediction"] = rf.predict(xTest)
 print("Random Forest Classifier")
 print(md.get_results(results["true_y"], results["prediction"]))
+"""
 
+knn = md.fit_knn(xTrain, yTrain)
+results["prediction"] = knn.predict(xTest)
+print("KNN")
+print(md.get_results(results["true_y"], results["prediction"]))
