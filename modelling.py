@@ -2,7 +2,8 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.model_selection import RandomizedSearchCV
-
+from sklearn.model_selection import GridSearchCV  
+from sklearn.svm import SVC  
 
 def fit_ada_boost(features, labels):
     param_dist = {
@@ -49,6 +50,14 @@ def fit_random_forest(features, labels):
 
     model = model.fit(features, labels)
     return model
+
+def fit_SVM(features, labels):
+    svm = SVC(kernel='rbf', probability=True)    
+    param_grid = {'C': [1e-3, 1e-2, 1e-1, 1, 10, 100, 1000], 'gamma': [0.001, 0.0001]}    
+    grid_search = GridSearchCV(svm, param_grid, n_jobs = 8, verbose=1)    
+    model = grid_search.fit(features, labels) 
+    return model
+
 
 def get_results(y_true,pred):
     return (y_true == pred).value_counts()

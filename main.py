@@ -39,3 +39,7 @@ results["prediction"] = rf.predict(xTest)
 print("Random Forest Classifier")
 print(md.get_results(results["true_y"], results["prediction"]))
 
+svm = md.fit_SVM(xTrain, yTrain)
+results["prediction"] = svm.predict(xTest)
+print("SVM Classifier")
+print(md.get_results(results["true_y"], results["prediction"]))
