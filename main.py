@@ -40,9 +40,23 @@ rf = md.fit_random_forest(xTrain, yTrain)
 results["prediction"] = rf.predict(xTest)
 print("Random Forest Classifier")
 print(md.get_results(results["true_y"], results["prediction"]))
-"""
 
+
+
+
+logistic = md.fit_logistic_regression(xTrain, yTrain)
+results["prediction"] = logistic.predict(xTest)
+print("Logistic")
+print(results["prediction"])
+print(md.get_results(results["true_y"], results["prediction"]))
+
+"""
 knn = md.fit_knn(xTrain, yTrain)
 results["prediction"] = knn.predict(xTest)
 print("KNN")
+print(md.get_results(results["true_y"], results["prediction"]))
+
+gb = md.fit_gradient_boosting(xTrain, yTrain)
+results["prediction"] = gb.predict(xTest)
+print("Gradient Boosting")
 print(md.get_results(results["true_y"], results["prediction"]))

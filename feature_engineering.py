@@ -54,11 +54,13 @@ def generate_y(df, col_name):
     diff.values[diff.values < 0] = SIGNALS.BUY()
     return diff
 
+
 def generate_y_reg(df,col_name):
     y = df[col_name].shift(-1)
-    y = y.dropna()
-    print(y)
+    df2 = y.to_frame(name='Y')
+    y = log_returns(df2, 'Y')
     return y
+
 
 def log_returns(df, col_name):
     ratio = df[col_name] / df[col_name].shift(1)
@@ -71,8 +73,8 @@ def standardize(df, col_name):
     std = col.std()
     print(mean, std)
     return ((col - mean) / std)
-    
-    
+
+
 def data_integrate():
     data_1d_5y = pd.read_csv('data_1d_5y.csv') # Please type the path of the original data by Danish
     data_1d_5y['Date'] = pd.to_datetime(data_1d_5y['Date'], dayfirst=True)
@@ -135,6 +137,17 @@ def data_integrate():
     data_1d_5y.reset_index(inplace=True)
     data_1d_5y.to_csv('data_1d_5y.csv', index=True) # Save the name as 'data_1d_5y.csv'
 
+def generate_data_reg():
+    data = pd.read_csv('data/data_1d_5y.csv')
+    data_norm = pd.read_csv('data/data_normalized_1d_5y.csv')
+
+    data_norm = data_norm.drop(["Signal"], axis=1)
+    data_norm['Y'] = generate_y_reg(data, 'Close').shift(-1)
+    data_norm = data_norm[
+        ['Date', 'Y', 'Open', 'High', 'Low', 'Close', 'Volume', 'RUSS_Close', 'NYSE_Close', 'NASDAQ_Close', 'DJI_Close',
+         'FTSE_Close', 'GOLD_Close', 'N225_Close', 'USDCNY_Close', 'USDEUR_Close', 'USDGBP_Close', 'USDJPY_Close']]
+    data_norm.dropna().to_csv('data/data_reg_1d_5y.csv', index=False, float_format='%.9f')
+
 
 # correlation matrix
 def corr_matrix():
@@ -181,4 +194,6 @@ def feature_importance(df):
     df = pd.DataFrame(feature_importance, columns=['importance'])
     df['rank'] = df['importance'].rank(ascending=False) 
     df.to_csv(r'feature_importance.csv')
+
+
 

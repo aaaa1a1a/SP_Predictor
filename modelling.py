@@ -1,8 +1,11 @@
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.neighbors import KNeighborsClassifier, KNeighborsRegressor
+from sklearn.linear_model import LogisticRegressionCV, SGDClassifier
+from sklearn.naive_bayes import GaussianNB
 
 def fit_ada_boost(features, labels):
     param_dist = {
@@ -53,6 +56,11 @@ def fit_random_forest(features, labels):
 
 def fit_knn(features, labels):
     model = KNeighborsClassifier(n_neighbors=10)
+    model.fit(features, labels)
+    return model
+
+def fit_gradient_boosting(features, labels):
+    model = GradientBoostingClassifier(n_estimators=100, learning_rate=0.1, max_depth=1, random_state=42)
     model.fit(features, labels)
     return model
 
