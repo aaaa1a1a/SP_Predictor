@@ -28,6 +28,7 @@ from sklearn.ensemble import ExtraTreesClassifier
 import matplotlib     #error for mac: https://markhneedham.com/blog/2018/05/04/python-runtime-error-osx-matplotlib-not-installed-as-framework-mac/
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
+import ta
 
 class Signals:
     def HOLD(self): return int(0)
@@ -195,5 +196,6 @@ def feature_importance(df):
     df['rank'] = df['importance'].rank(ascending=False) 
     df.to_csv(r'feature_importance.csv')
 
-
-
+# Non-normalized data should be fed to this function
+def add_technical_indicators(raw_data):
+    return ta.add_all_ta_features(raw_data, "Open", "High", "Low", "Close", "Volume", fillna=True)
