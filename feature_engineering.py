@@ -143,10 +143,9 @@ def generate_data_reg():
     data_norm = pd.read_csv('data/data_normalized_1d_5y.csv')
 
     data_norm = data_norm.drop(["Signal"], axis=1)
-    data_norm['Y'] = generate_y_reg(data, 'Close').shift(-1)
-    data_norm = data_norm[
-        ['Date', 'Y', 'Open', 'High', 'Low', 'Close', 'Volume', 'RUSS_Close', 'NYSE_Close', 'NASDAQ_Close', 'DJI_Close',
-         'FTSE_Close', 'GOLD_Close', 'N225_Close', 'USDCNY_Close', 'USDEUR_Close', 'USDGBP_Close', 'USDJPY_Close']]
+    y = generate_y_reg(data, 'Close').shift(-1)
+    data_norm.insert(data_norm.columns.get_loc('Date') + 1, 'Y', y)
+
     data_norm.dropna().to_csv('data/data_reg_1d_5y.csv', index=False, float_format='%.9f')
 
 

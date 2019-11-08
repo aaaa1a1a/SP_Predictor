@@ -62,6 +62,13 @@ def fit_SVM(features, labels):
     return model
 
 def fit_KNN(features, labels):
+    """
+    k_range = list(range(1, 31))
+    param_grid = { 'p': [1, 2, 3, 4, 5], 'weights': ["uniform", "distance"]}
+    for n in k_range:
+        model = KNeighborsClassifier(n_neighbors=n)
+        model.fit(features, labels)
+    """
     model = KNeighborsClassifier(n_neighbors=14)
     model.fit(features, labels)
 
