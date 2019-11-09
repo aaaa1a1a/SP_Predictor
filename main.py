@@ -30,22 +30,22 @@ prediction = pd.DataFrame()
 results = pd.DataFrame()
 results["true_y"] = yTest
 
-#
-# ada = md.fit_ada_boost(xTrain, yTrain)
-# results["prediction"] = ada.predict(xTest)
-# print("Adaboost Classifier")
-# print(md.get_results(results["true_y"], results["prediction"]))
-#
-# rf = md.fit_random_forest(xTrain, yTrain)
-# results["prediction"] = rf.predict(xTest)
-# print("Random Forest Classifier")
-# print(md.get_results(results["true_y"], results["prediction"]))
-#
-# svm = md.fit_SVM(xTrain, yTrain)
-# results["prediction"] = svm.predict(xTest)
-# print("SVM Classifier")
-# print(md.get_results(results["true_y"], results["prediction"]))
-# print('Accuracy of the SVM on test set: {:.3f}'.format(svm.score(xTest, yTest)))
+
+ada = md.fit_ada_boost(xTrain, yTrain)
+results["prediction"] = ada.predict(xTest)
+print("Adaboost Classifier")
+print(md.get_results(results["true_y"], results["prediction"]))
+
+rf = md.fit_random_forest(xTrain, yTrain)
+results["prediction"] = rf.predict(xTest)
+print("Random Forest Classifier")
+print(md.get_results(results["true_y"], results["prediction"]))
+
+svm = md.fit_SVM(xTrain, yTrain)
+results["prediction"] = svm.predict(xTest)
+print("SVM Classifier")
+print(md.get_results(results["true_y"], results["prediction"]))
+print('Accuracy of the SVM on test set: {:.3f}'.format(svm.score(xTest, yTest)))
 
 
 knn = md.fit_KNN(xTrain, yTrain, False)

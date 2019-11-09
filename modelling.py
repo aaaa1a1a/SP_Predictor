@@ -63,8 +63,8 @@ def fit_SVM(features, labels):
 
 def fit_KNN(features, labels, withTuning):
     if withTuning:
-        param_grid = {'n_neighbors': list(range(1, 30)), 'p': [1, 2, 3, 4, 5]}
-        model = GridSearchCV(KNeighborsClassifier(), param_grid, scoring='accuracy', n_jobs=4, verbose=1)
+        param_grid = {'n_neighbors': list(range(1, 30)), 'p': [1, 2, 3, 4, 5, 6, 7, 8, 9]}
+        model = GridSearchCV(KNeighborsClassifier(), param_grid, scoring='accuracy', n_jobs=8, verbose=1, cv=2)
 
     else:
         model = KNeighborsClassifier(n_neighbors=14)
