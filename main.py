@@ -30,7 +30,7 @@ prediction = pd.DataFrame()
 results = pd.DataFrame()
 results["true_y"] = yTest
 
-
+#
 # ada = md.fit_ada_boost(xTrain, yTrain)
 # results["prediction"] = ada.predict(xTest)
 # print("Adaboost Classifier")
@@ -48,13 +48,13 @@ results["true_y"] = yTest
 # print('Accuracy of the SVM on test set: {:.3f}'.format(svm.score(xTest, yTest)))
 
 
-knn = md.fit_KNN(xTrain, yTrain)
+knn = md.fit_KNN(xTrain, yTrain, False)
 results["prediction"] = knn.predict(xTest)
 print("KNN")
 print(md.get_results(results["true_y"], results["prediction"]))
 print('Accuracy of the KNN on test set: {:.3f}'.format(knn.score(xTest, yTest)))
 
-gb = md.fit_gradient_boosting(xTrain, yTrain)
+gb = md.fit_gradient_boosting(xTrain, yTrain, False)
 results["prediction"] = gb.predict(xTest)
 print("Gradient Boosting")
 print(md.get_results(results["true_y"], results["prediction"]))

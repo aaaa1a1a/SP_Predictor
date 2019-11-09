@@ -4,7 +4,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.model_selection import RandomizedSearchCV
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, ShuffleSplit
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
 
@@ -61,38 +61,32 @@ def fit_SVM(features, labels):
     model = grid_search.fit(features, labels)
     return model
 
-def fit_KNN(features, labels):
-    """
-    k_range = list(range(1, 31))
-    param_grid = { 'p': [1, 2, 3, 4, 5], 'weights': ["uniform", "distance"]}
-    for n in k_range:
-        model = KNeighborsClassifier(n_neighbors=n)
-        model.fit(features, labels)
-    """
-    model = KNeighborsClassifier(n_neighbors=14)
+def fit_KNN(features, labels, withTuning):
+    if withTuning:
+        param_grid = {'n_neighbors': list(range(1, 30)), 'p': [1, 2, 3, 4, 5]}
+        model = GridSearchCV(KNeighborsClassifier(), param_grid, scoring='accuracy', n_jobs=4, verbose=1)
+
+    else:
+        model = KNeighborsClassifier(n_neighbors=14)
+
     model.fit(features, labels)
 
     return model
 
-def fit_gradient_boosting(features, labels):
-    """
-    *tuning (takes a long time)
-    param_grid = {'learning_rate': [0.15, 0.1, 0.05, 0.01, 0.005, 0.001],
-                  'n_estimators': [100, 250, 500, 750, 1000, 1250, 1500, 1750],
-                  'max_depth': [2, 3, 4, 5, 6, 7]}
+def fit_gradient_boosting(features, labels, withTuning):
 
+    if withTuning:
+        param_grid = {'learning_rate': [0.15, 0.1, 0.05, 0.01, 0.005, 0.001],
+                      'n_estimators': [100, 250, 500, 750, 1000, 1250, 1500, 1750],
+                      'max_depth': [2, 3, 4, 5, 6, 7]}
 
-    model = GridSearchCV(
-        estimator=GradientBoostingClassifier(min_samples_split=2,
-                                             min_samples_leaf=1, subsample=1, max_features='sqrt', random_state=10),
-        param_grid=param_grid, scoring='accuracy', n_jobs=4, iid=False, cv=5)
-    
-    
-    model.fit(features, labels)
-    print(model.cv_results_, model.best_params_, model.best_score_)
-    """
+        model = GridSearchCV(
+            estimator=GradientBoostingClassifier(min_samples_split=2,
+                                                 min_samples_leaf=1, subsample=1, max_features='sqrt', random_state=10),
+            param_grid=param_grid, scoring='accuracy', n_jobs=4, iid=False, cv=5)
+    else:
+        model = GradientBoostingClassifier(learning_rate=0.001, n_estimators=500,max_depth=3, min_samples_split=2, min_samples_leaf=2, subsample=1,max_features='sqrt', random_state=10)
 
-    model = GradientBoostingClassifier(learning_rate=0.001, n_estimators=500,max_depth=3, min_samples_split=2, min_samples_leaf=2, subsample=1,max_features='sqrt', random_state=10)
     model.fit(features, labels)
 
     return model

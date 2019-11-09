@@ -139,14 +139,13 @@ def data_integrate():
     data_1d_5y.to_csv('data_1d_5y.csv', index=True) # Save the name as 'data_1d_5y.csv'
 
 def generate_data_reg():
-    data = pd.read_csv('data/data_1d_5y.csv')
-    data_norm = pd.read_csv('data/data_normalized_1d_5y.csv')
+    data = pd.read_csv(dd.file_name("data"))
+    data_norm = pd.read_csv(dd.file_name("data_normalized"))
 
     data_norm = data_norm.drop(["Signal"], axis=1)
     y = generate_y_reg(data, 'Close').shift(-1)
     data_norm.insert(data_norm.columns.get_loc('Date') + 1, 'Y', y)
-
-    data_norm.dropna().to_csv('data/data_reg_1d_5y.csv', index=False, float_format='%.9f')
+    data_norm.dropna().to_csv(dd.file_name("data_reg"), index=False, float_format='%.9f')
 
 
 # correlation matrix
