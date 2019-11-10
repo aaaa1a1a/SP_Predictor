@@ -25,6 +25,8 @@ import download_data as dd
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.ensemble import ExtraTreesClassifier
+import matplotlib     #error for mac: https://markhneedham.com/blog/2018/05/04/python-runtime-error-osx-matplotlib-not-installed-as-framework-mac/
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import ta
 
@@ -44,6 +46,7 @@ SIGNALS = Signals()
 
 # def equalize_close_open()
 
+
 def generate_y(df, col_name):
     diff = df[col_name].diff(periods=-1)
     print(diff)
@@ -51,6 +54,13 @@ def generate_y(df, col_name):
     diff.values[diff.values > 0] = SIGNALS.SELL()
     diff.values[diff.values < 0] = SIGNALS.BUY()
     return diff
+
+
+def generate_y_reg(df,col_name):
+    y = df[col_name].shift(-1)
+    df2 = y.to_frame(name='Y')
+    y = log_returns(df2, 'Y')
+    return y
 
 
 def log_returns(df, col_name):
@@ -64,8 +74,8 @@ def standardize(df, col_name):
     std = col.std()
     print(mean, std)
     return ((col - mean) / std)
-    
-    
+
+
 def data_integrate():
     data_1d_5y = pd.read_csv('data_1d_5y.csv') # Please type the path of the original data by Danish
     data_1d_5y['Date'] = pd.to_datetime(data_1d_5y['Date'], dayfirst=True)
@@ -126,12 +136,21 @@ def data_integrate():
     # data_1d_5y.head(5)
     data_1d_5y[data_1d_5y.isna().any(axis=1)]
     data_1d_5y.reset_index(inplace=True)
-    data_1d_5y.to_csv('data_id_5y.csv', index=True) # Save the name as 'data_id_5y.csv'
+    data_1d_5y.to_csv('data_1d_5y.csv', index=True) # Save the name as 'data_1d_5y.csv'
+
+def generate_data_reg():
+    data = pd.read_csv(dd.file_name("data"))
+    data_norm = pd.read_csv(dd.file_name("data_normalized"))
+
+    data_norm = data_norm.drop(["Signal"], axis=1)
+    y = generate_y_reg(data, 'Close').shift(-1)
+    data_norm.insert(data_norm.columns.get_loc('Date') + 1, 'Y', y)
+    data_norm.dropna().to_csv(dd.file_name("data_reg"), index=False, float_format='%.9f')
 
 
 # correlation matrix
 def corr_matrix():
-    df = pd.read_csv('data_id_5y.csv',index_col=0)
+    df = pd.read_csv('data_1d_5y.csv',index_col=0)
     #forward fill
     df = df.ffill(axis=0)
     #all close prices
