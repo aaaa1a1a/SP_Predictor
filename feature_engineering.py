@@ -25,13 +25,15 @@ import download_data as dd
 import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.ensemble import ExtraTreesClassifier
-import matplotlib     #error for mac: https://markhneedham.com/blog/2018/05/04/python-runtime-error-osx-matplotlib-not-installed-as-framework-mac/
+# error for mac: https://markhneedham.com/blog/2018/05/04/python-runtime-error-osx-matplotlib-not-installed-as-framework-mac/
+import matplotlib
+
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import ta
 
+
 class Signals:
-    def HOLD(self): return int(0)
 
     def BUY(self): return int(1)
 
@@ -44,19 +46,14 @@ class Signals:
 SIGNALS = Signals()
 
 
-# def equalize_close_open()
-
-
 def generate_y(df, col_name):
     diff = df[col_name].diff(periods=-1)
-    print(diff)
-    diff.values[diff.values == 0] = SIGNALS.HOLD()
     diff.values[diff.values > 0] = SIGNALS.SELL()
-    diff.values[diff.values < 0] = SIGNALS.BUY()
+    diff.values[diff.values <= 0] = SIGNALS.BUY()
     return diff
 
 
-def generate_y_reg(df,col_name):
+def generate_y_reg(df, col_name):
     y = df[col_name].shift(-1)
     df2 = y.to_frame(name='Y')
     y = log_returns(df2, 'Y')
@@ -72,30 +69,27 @@ def standardize(df, col_name):
     col = df[col_name]
     mean = col.mean()
     std = col.std()
-    print(mean, std)
     return ((col - mean) / std)
 
 
 def data_integrate():
-    data_1d_5y = pd.read_csv('data_1d_5y.csv') # Please type the path of the original data by Danish
+    data_1d_5y = pd.read_csv('data_1d_5y.csv')  # Please type the path of the original data by Danish
     data_1d_5y['Date'] = pd.to_datetime(data_1d_5y['Date'], dayfirst=True)
 
     data_1d_5y.set_index('Date', inplace=True)
     data_1d_5y.drop(['Unnamed: 0'], axis=1, inplace=True)
     # data_1d_5y.head(5)
 
-
-    dji = pd.read_csv('DJI_1d_5y.csv') # US data
+    dji = pd.read_csv('DJI_1d_5y.csv')  # US data
     dji['Date'] = pd.to_datetime(dji['Date'], dayfirst=True)
     dji = dji[['Date', 'Close']]
     dji.rename(columns={'Close': 'DJI_Close'}, inplace=True)
     dji.set_index('Date', inplace=True)
-    #dji.head(10)
+    # dji.head(10)
     data_1d_5y = data_1d_5y.join(dji)
     # data_1d_5y.head(5)
 
-
-    ftse = pd.read_csv('FTSE_1d_5y.csv') # UK data
+    ftse = pd.read_csv('FTSE_1d_5y.csv')  # UK data
     ftse['Date'] = pd.to_datetime(ftse['Date'], dayfirst=True)
     ftse = ftse[['Date', 'Close']]
     ftse.rename(columns={'Close': 'FTSE_Close'}, inplace=True)
@@ -104,18 +98,16 @@ def data_integrate():
     data_1d_5y = data_1d_5y.join(ftse)
     # data_1d_5y.head(5)
 
-
-    gold = pd.read_csv('GOLD_1d_5y.csv') # Gold Price
+    gold = pd.read_csv('GOLD_1d_5y.csv')  # Gold Price
     gold['Date'] = pd.to_datetime(gold['Dates'], dayfirst=True)
     gold = gold[['Date', 'Close']]
     gold.rename(columns={'Close': 'GOLD_Close'}, inplace=True)
     gold.set_index('Date', inplace=True)
-    #gold.head(5)
+    # gold.head(5)
     data_1d_5y = data_1d_5y.join(gold)
     # data_1d_5y.head(5)
 
-
-    N225 = pd.read_csv('N225_1d_5y.csv') # Japan Data
+    N225 = pd.read_csv('N225_1d_5y.csv')  # Japan Data
     N225['Date'] = pd.to_datetime(N225['Date'], dayfirst=True)
     N225 = N225[['Date', 'Close']]
     N225.rename(columns={'Close': 'N225_Close'}, inplace=True)
@@ -124,10 +116,9 @@ def data_integrate():
     data_1d_5y = data_1d_5y.join(N225)
     # data_1d_5y.head(5)
 
-
     currency = ['CNY', 'EUR', 'GBP', 'JPY']
     for cur in currency:
-        currency_df = pd.read_csv(f"USD{cur}_1d_5y.csv") # Currency
+        currency_df = pd.read_csv(f"USD{cur}_1d_5y.csv")  # Currency
         currency_df['Date'] = pd.to_datetime(currency_df['Date'], dayfirst=True)
         currency_df = currency_df[['Date', 'Close']]
         currency_df.rename(columns={'Close': f"USD{cur}_Close"}, inplace=True)
@@ -136,7 +127,8 @@ def data_integrate():
     # data_1d_5y.head(5)
     data_1d_5y[data_1d_5y.isna().any(axis=1)]
     data_1d_5y.reset_index(inplace=True)
-    data_1d_5y.to_csv('data_1d_5y.csv', index=True) # Save the name as 'data_1d_5y.csv'
+    data_1d_5y.to_csv('data_1d_5y.csv', index=True)
+
 
 def generate_data_reg():
     data = pd.read_csv(dd.file_name("data"))
@@ -150,50 +142,63 @@ def generate_data_reg():
 
 # correlation matrix
 def corr_matrix():
-    df = pd.read_csv('data_1d_5y.csv',index_col=0)
-    #forward fill
+    df = pd.read_csv('data_1d_5y.csv', index_col=0)
     df = df.ffill(axis=0)
-    #all close prices
+    # all close prices
     df = df.filter(regex="Close")
     matrix = df.corr().style.background_gradient(cmap='coolwarm').set_precision(2)
-    return(matrix)
+    return (matrix)
+
 
 def pca(df):
     # it will be more useful when we have set the number of PC or explain_variance_ratio
     # this input df should be filled df after df = df.ffill(axis=0)
-    pca = PCA() # there is a parameter to decide the number of PCs or explain variance ratio
-    pca.fit(df)  
+    pca = PCA()  # there is a parameter to decide the number of PCs or explain variance ratio
+    pca.fit(df)
 
     explained_variance_ratio = pca.explained_variance_ratio_
     eigen_values = pca.explained_variance_
-    eigen_vectors = pca.components_ 
-    
+    eigen_vectors = pca.components_
+
     df1 = pd.DataFrame({
-                 'eigen_values':eigen_values,
-                 'explained_variance_ratio':explained_variance_ratio})
+        'eigen_values': eigen_values,
+        'explained_variance_ratio': explained_variance_ratio})
     df2 = pd.DataFrame(eigen_vectors)
-    df3 = pd.concat([df1,df2], axis=1)
-    df3.to_csv(r'eigen_values.csv', index=False)    
-    
+    df3 = pd.concat([df1, df2], axis=1)
+    df3.to_csv(r'eigen_values.csv', index=False)
+
+
 def feature_importance(df):
     # this input df should be filled df after df = df.ffill(axis=0)    
     y = df['Signal']
-    X = df.drop(['Date','Signal'], axis=1)
-    
-    model = ExtraTreesClassifier(n_estimators=50) # default is 10 and will change to 100 in the new version
-    model.fit(X,y)
+    X = df.drop(['Date', 'Signal'], axis=1)
+
+    model = ExtraTreesClassifier(n_estimators=50)  # default is 10 and will change to 100 in the new version
+    model.fit(X, y)
     feature_importance = pd.Series(model.feature_importances_, index=X.columns).sort_values(ascending=False)
-    
+
     # plot graph of feature importances for better visualization
     feature_importance.plot(kind='barh')
     plt.title('feature_importance')
     plt.show()
-    
+
     # write feature_importances.csv to data directory
     df = pd.DataFrame(feature_importance, columns=['importance'])
-    df['rank'] = df['importance'].rank(ascending=False) 
+    df['rank'] = df['importance'].rank(ascending=False)
     df.to_csv(r'feature_importance.csv')
+
 
 # Non-normalized data should be fed to this function
 def add_technical_indicators(raw_data):
     return ta.add_all_ta_features(raw_data, "Open", "High", "Low", "Close", "Volume", fillna=True)
+
+
+def normalize_data(file_name, normal_file_name):
+    data = pd.read_csv("data/" + file_name)
+    data = data.ffill(axis=0)
+    for col in data.columns:
+        if col != "Date" and col != "Volume" and col != "Signal":
+            data[col] = log_returns(data, col)
+            data[col] = data[col].replace(to_replace=0, method='ffill')
+
+    data.to_csv("data/" + normal_file_name)
