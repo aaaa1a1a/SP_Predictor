@@ -202,3 +202,20 @@ def normalize_data(file_name, normal_file_name):
             data[col] = data[col].replace(to_replace=0, method='ffill')
 
     data.to_csv("data/" + normal_file_name)
+
+    
+    
+#'Date' transformation, output (df) produced with date value columns according to different kinds of requests.   
+from datetime import datetime
+def get_date_value(data, var):    
+    #put raw input into 'data'
+    #'var' accepts strings: 'year','month','week','weekday','day'
+    
+    date = {'year':'%Y','month':'%B','weekday':'%A','day':'%d','week':'%U'}
+    l = []
+    for i in range(len(data)):
+        l.append(datetime.strptime(data.Date[i], '%d-%m-%y').strftime(date[var]))
+    l = pd.DataFrame(l, columns=[var])
+    data_date = l[var].str.get_dummies()
+    data = pd.concat([data,data_date], axis=1).drop(['Date','Unnamed: 0'],axis=1)
+    return(data)
