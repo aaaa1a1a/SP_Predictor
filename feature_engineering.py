@@ -137,6 +137,7 @@ def generate_data_reg():
     data_norm = data_norm.drop(["Signal"], axis=1)
     y = generate_y_reg(data, 'Close').shift(-1)
     data_norm.insert(data_norm.columns.get_loc('Date') + 1, 'Y', y)
+    data_norm = data_norm.drop(["Unnamed: 0"], axis=1)  # data_normalizaed data somehow got an Index row
     data_norm.dropna().to_csv(dd.file_name("data_reg"), index=False, float_format='%.9f')
 
 
