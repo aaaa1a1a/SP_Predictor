@@ -203,3 +203,17 @@ def normalize_data(file_name, normal_file_name):
             data[col] = data[col].replace(to_replace=0, method='ffill')
 
     data.to_csv("data/" + normal_file_name)
+   
+def get_date_value(data, var):
+    #data: input file with 'Date' column
+    #var: date type - ('year','month','week','day','weekday')
+    
+    date = {'year':'%Y','month':'%B','weekday':'%A','day':'%d','week':'%U'}
+    l = []
+    for i in range(len(data)):
+        l.append(datetime.strptime(data.Date[i],'%d-%m-%y').strftime(date[var]))
+    l = pd.DataFrame(l, columns=[var])
+    data_date = l[var].str.get_dummies()
+    data = pd.concat([data,data_date],axis=1)
+    return(data)
+
