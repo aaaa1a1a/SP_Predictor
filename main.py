@@ -52,7 +52,7 @@ print('Accuracy of the FNN on test set: {:.3f}'.format(md.accuracy_score(yTest_f
 
 data = pd.read_csv("data/data_minmax_1d_10y.csv")
 xTrain_seq, xTest_seq, yTrain_seq, yTest_seq, scaler_label = md.transform_and_rescale(data, history_size=4)
-model = md.fit_LSTM(xTrain_seq, yTrain_seq)
+model = md.fit_LSTM_reg(xTrain_seq, yTrain_seq)
 results = pd.DataFrame({"true_y": yTest_seq, "prediction": model.predict(xTest_seq).flatten()})
 print("LSTM Regressor")
 print('MSE of the LSTM on test set: {:.3f}'.format(md.get_mse(results['true_y'], results["prediction"], scaler_label)))

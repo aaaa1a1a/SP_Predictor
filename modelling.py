@@ -204,7 +204,7 @@ def transform_and_rescale(data, history_size):
     xTrain, xTest, yTrain, yTest = univariate_data(features, label, start_index=1, end_index=None, history_size=history_size, target_size=1, test_size=0.2)
     return xTrain, xTest, yTrain, yTest, scaler_label
 
-def fit_LSTM(features, labels):
+def fit_LSTM_reg(features, labels):
     BATCH_SIZE = 200
     BUFFER_SIZE = 10000
     train_univariate = tf.data.Dataset.from_tensor_slices((features, labels))
