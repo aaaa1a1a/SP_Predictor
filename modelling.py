@@ -7,12 +7,16 @@ from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import GridSearchCV, ShuffleSplit
 from sklearn.svm import SVC
 from sklearn.neighbors import KNeighborsClassifier
+from statsmodels.tsa.arima_model import ARIMA
+
+import feature_engineering as fe
+
 
 def fit_ada_boost(features, labels):
     param_dist = {
         'n_estimators': [50, 100, 300, 1000, 1500, 2000],
         'learning_rate': [0.01, 0.05, 0.1, 0.3, 1]
-        #'loss': ['linear', 'square', 'exponential']
+        # 'loss': ['linear', 'square', 'exponential']
     }
 
     pre_gs_inst = RandomizedSearchCV(AdaBoostClassifier(),
@@ -23,6 +27,7 @@ def fit_ada_boost(features, labels):
 
     model = pre_gs_inst.fit(features, labels)
     return model
+
 
 def fit_random_forest(features, labels):
     n_estimators = [int(x) for x in np.linspace(start=200, stop=2000, num=10)]
@@ -54,12 +59,14 @@ def fit_random_forest(features, labels):
     model = model.fit(features, labels)
     return model
 
+
 def fit_SVM(features, labels):
     svm = SVC(kernel='rbf', probability=True)
     param_grid = {'C': [1e-3, 1e-2, 1e-1, 1, 10, 100, 1000], 'gamma': [0.001, 0.0001]}
-    grid_search = GridSearchCV(svm, param_grid, n_jobs = 8, verbose=1)
+    grid_search = GridSearchCV(svm, param_grid, n_jobs=8, verbose=1)
     model = grid_search.fit(features, labels)
     return model
+
 
 def fit_KNN(features, labels, withTuning):
     if withTuning:
@@ -73,8 +80,8 @@ def fit_KNN(features, labels, withTuning):
 
     return model
 
-def fit_gradient_boosting(features, labels, withTuning):
 
+def fit_gradient_boosting(features, labels, withTuning):
     if withTuning:
         param_grid = {'learning_rate': [0.15, 0.1, 0.05, 0.01, 0.005, 0.001],
                       'n_estimators': [100, 250, 500, 750, 1000, 1250, 1500, 1750],
@@ -85,11 +92,29 @@ def fit_gradient_boosting(features, labels, withTuning):
                                                  min_samples_leaf=1, subsample=1, max_features='sqrt', random_state=10),
             param_grid=param_grid, scoring='accuracy', n_jobs=4, iid=False, cv=5)
     else:
-        model = GradientBoostingClassifier(learning_rate=0.001, n_estimators=500,max_depth=3, min_samples_split=2, min_samples_leaf=2, subsample=1,max_features='sqrt', random_state=10)
+        model = GradientBoostingClassifier(learning_rate=0.001, n_estimators=500, max_depth=3, min_samples_split=2,
+                                           min_samples_leaf=2, subsample=1, max_features='sqrt', random_state=10)
 
     model.fit(features, labels)
 
     return model
 
-def get_results(y_true,pred):
+
+def fit_arima(all_data, col_name, test_lines_num, classification, ord=[2, 1, 2]):
+    data = pd.DataFrame()
+    data["Date"] = pd.date_range(start='1/1/1979', periods=len(all_data), freq='D')
+    data[col_name] = all_data[col_name]
+    data = data.set_index('Date')
+    model = ARIMA(data[:-test_lines_num], order=(ord[0], ord[1], ord[2]))
+    result = model.fit()
+    print(result.summary())
+    test = data.tail(test_lines_num)
+    test["prediction"] = result.forecast(test_lines_num)[0]
+    if classification:
+        test.to_csv("arima_results.csv")
+        return fe.generate_y(test, "prediction")
+    return test["prediction"].tolist()
+
+
+def get_results(y_true, pred):
     return (y_true == pred).value_counts()

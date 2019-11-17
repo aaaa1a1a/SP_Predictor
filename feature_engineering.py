@@ -203,3 +203,12 @@ def normalize_data(file_name, normal_file_name):
             data[col] = data[col].replace(to_replace=0, method='ffill')
 
     data.to_csv("data/" + normal_file_name)
+
+
+def ordered_train_test_split(data, y_col_name, ratio=80):
+    if (ratio > 99 or ratio < 1):
+        print("ratio must be between 1 and 99")
+        return -1
+    train = data.head(int(len(data) * (ratio / 100)))
+    test = data.iloc[-(int(len(data) * ((100 - ratio) / 100))):]
+    return train.drop([y_col_name], axis=1), test.drop([y_col_name], axis=1), train[y_col_name], test[y_col_name]
