@@ -31,6 +31,7 @@ import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import ta
+from sklearn.preprocessing import MinMaxScaler
 
 
 class Signals:
@@ -212,3 +213,16 @@ def ordered_train_test_split(data, y_col_name, ratio=80):
     train = data.head(int(len(data) * (ratio / 100)))
     test = data.iloc[-(int(len(data) * ((100 - ratio) / 100))):]
     return train.drop([y_col_name], axis=1), test.drop([y_col_name], axis=1), train[y_col_name], test[y_col_name]
+
+# Apply the MinMaxScaler to normalize features, but not label
+# Save it. Example: file_name="data_1d_10y"  normal_file_name="data_minmax_1d_10y"
+def apply_min_max_scaler(file_name, normal_file_name):
+    data = pd.read_csv("data/" + file_name)
+    data = data.drop(['Volume', 'Unnamed: 0', 'Signal', 'Date'], axis=1)
+    data = data.ffill(axis=0)
+    for col in data.columns:
+        if col != 'Close':
+            scaler=MinMaxScaler()
+            data[col] = scaler.fit_transform(data[col].values.reshape(-1, 1))
+            data[col] = data[col].replace(to_replace=0, method='ffill')
+    data.to_csv("data/" + normal_file_name, index=False)
