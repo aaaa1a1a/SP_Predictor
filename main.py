@@ -1,8 +1,6 @@
 import modelling as md
 import pandas as pd
 import feature_engineering as fe
-import os
-from sklearn.model_selection import train_test_split
 
 data = pd.read_csv(
     "data/data_normalized_1d_10y.csv")  # Note, this the 10 years data file. Decide which one to use.
@@ -42,12 +40,12 @@ print("Gradient Boosting")
 print(md.get_results(results["true_y"], results["prediction"]))
 print('Accuracy of the GBM on test set: {:.3f}'.format(gb.score(xTest, yTest)))
 
-<<<<<<< HEAD
+
 rf = md.fit_random_forest(xTrain, yTrain)
 results["prediction"] = rf.predict(xTest)
 print("Random Forest Classifier")
 print(md.get_results(results["true_y"], results["prediction"]))
-=======
+
 lr = md.fit_logistic_regression(xTrain, yTrain)
 results["prediction"] = lr.predict(xTest)
 print("Logistic Regression")
@@ -67,4 +65,4 @@ model = md.fit_LSTM_reg(xTrain_seq, yTrain_seq)
 results = pd.DataFrame({"true_y": yTest_seq, "prediction": model.predict(xTest_seq).flatten()})
 print("LSTM Regressor")
 print('MSE of the LSTM on test set: {:.3f}'.format(md.get_mse(results['true_y'], results["prediction"], scaler_label)))
->>>>>>> e90eeed368599e42f29962f9dc2915d76a554a03
+
