@@ -43,6 +43,12 @@ print("Gradient Boosting")
 print(md.get_results(results["true_y"], results["prediction"]))
 print('Accuracy of the GBM on test set: {:.3f}'.format(gb.score(xTest, yTest)))
 
+lr = md.fit_logistic_regression(xTrain, yTrain)
+results["prediction"] = lr.predict(xTest)
+print("Logistic Regression")
+print(md.get_results(results["true_y"], results["prediction"]))
+print('Accuracy of the Logistic Regression on test set: {:.3f}'.format(lr.score(xTest, yTest)))
+
 xTrain_fnn, xTest_fnn, yTrain_fnn, yTest_fnn = md.reconstruct(xTrain, xTest, yTrain, yTest)
 fnn = md.fit_FNN(xTrain_fnn, yTrain_fnn)
 results["prediction"] = fnn.predict(xTest_fnn).flatten()

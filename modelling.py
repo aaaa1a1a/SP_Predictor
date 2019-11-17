@@ -13,6 +13,7 @@ from tensorflow.keras import layers
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
 from sklearn.metrics import accuracy_score, mean_squared_error
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.linear_model import LogisticRegression
 
 def fit_ada_boost(features, labels):
     param_dist = {
@@ -95,6 +96,13 @@ def fit_gradient_boosting(features, labels, withTuning):
     model.fit(features, labels)
 
     return model
+
+def fit_logistic_regression(features, labels):    
+    param_grid = {'C': [1e-3, 1e-2, 1e-1, 1, 10, 100, 1000], 'solver': ['newton-cg', 'lbfgs', 'liblinear', 'sag', 'saga']}
+    grid_search = GridSearchCV(LogisticRegression(), param_grid, n_jobs = 8, verbose=1)
+    model = grid_search.fit(features, labels)
+    return model
+
 
 def get_results(y_true,pred):
     return (y_true == pred).value_counts()
